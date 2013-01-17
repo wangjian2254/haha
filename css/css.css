@@ -1,0 +1,73 @@
+*{
+            font-size: 14px;
+            line-height:22px;
+            color:#444444;
+            }
+            .del{
+                margin-bottom: 10px;
+                width: 900px;
+                text-align: left;
+                background-color: red;
+            }
+            .l{
+
+                width: 900px;
+                text-align: left;
+                background-color: #bbe1ff;
+                padding-left:15px;
+                padding-right:15px;
+            }
+            .d{
+
+                width: 900px;
+                text-align: left;
+
+                background-color: #dff1ff;
+                padding-left:15px;
+                padding-right:15px;
+            }
+            .df{
+
+                width: 900px;
+                text-align: left;
+
+                padding-left:15px;
+                padding-right:15px;
+            }
+            .dd{
+                margin-bottom: 10px;
+                width: 900px;
+                height: 30px;
+                line-height: 30px;
+
+                text-align:right;
+
+            }
+
+            .dd a{
+                font-size:12px;
+                font-weight:bold;
+
+            }
+            .ff{
+
+                position:fixed !important;
+                position:absolute;
+                bottom:100;_bottom:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollHeight-100 : document.body.scrollHeight-100  );
+
+            }
+
+             .ff a{
+
+                font-size:12px;
+                color:#333333;
+                 line-height: 14px;
+                 text-decoration:none;
+
+            }
+
+            #herder{
+                height:60px;
+                width:900;
+                background:url("/image/logo.gif") no-repeat;
+            }

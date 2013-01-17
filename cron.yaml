@@ -1,0 +1,11 @@
+cron:
+- description: search hot haha
+  url: /getHaHa
+  schedule: every day 15:00
+- description: auto send weibo
+  url: /PubWeibo
+  schedule: every 10 minutes
+
+
+
+
