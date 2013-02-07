@@ -71,3 +71,113 @@
                 width:900;
                 background:url("/image/logo.gif") no-repeat;
             }
+
+.commentlist{
+        width:100%;
+        float: left;
+
+    }
+.replaylist{
+        width:100%;
+        float: right;
+
+    }
+    .top{
+        height:15px;
+    }
+    .bottom{
+        height:16px;
+    }
+    .commenttl{
+        background:url("/static/img/i/yellowl.png") no-repeat -0px -0px;
+        height:15px;
+        width:22px;
+         }
+    .commentt{
+        background:url("/static/img/i/yellowtop.png") repeat-x;
+
+         }
+    .commenttr{
+        background:url("/static/img/i/yellowl.png") no-repeat -25px -0px;height:15px;width:18px;
+
+         }
+    .commentl{
+        background:url("/static/img/i/yellowleft.png") repeat-y;
+        width:17px;
+         }
+    .commentc{
+        background-color:#ebd134;
+        max-width:400px;
+         }
+    .commentr{
+        background:url("/static/img/i/yellowright.png") repeat-y;
+        width:16px;
+         }
+    .commentbl{
+        background:url("/static/img/i/yellowl.png") no-repeat -0px -16px;height:16px;width:22px;
+         }
+    .commentb{
+        background:url("/static/img/i/yellowbottom.png") repeat-x;
+        height:16px;
+         }
+    .commentbr{
+        background:url("/static/img/i/yellowl.png") no-repeat -25px -16px;height:16px;width:18px;
+         }
+.commentlist{
+        width:100%;
+        float: left;
+
+    }
+
+    .commentrtl{
+        background:url("/static/img/w/white.png") no-repeat -0px -0px;
+        height:15px;
+        width:18px;
+         }
+    .commentrt{
+        background:url("/static/img/w/whitetop.png") repeat-x;
+
+         }
+    .commentrtr{
+        background:url("/static/img/w/white.png") no-repeat -21px -0px;height:15px;width:22px;
+
+         }
+    .commentrl{
+        background:url("/static/img/w/whiteleft.png") repeat-y;
+        width:16px;
+         }
+    .commentrc{
+        background-color:#f5f5f5;
+        max-width:400px;
+         }
+    .commentrr{
+        background:url("/static/img/w/whiteright.png") repeat-y;
+        width:22px;
+         }
+    .commentrbl{
+        background:url("/static/img/w/white.png") no-repeat -0px -16px;height:16px;width:18px;
+         }
+    .commentrb{
+        background:url("/static/img/w/whitebottom.png") repeat-x;
+        height:16px;
+         }
+    .commentrbr{
+        background:url("/static/img/w/white.png") no-repeat -21px -16px;height:16px;width:22px;
+         }
+.leftcomment{
+    width:200px;
+    table-layout: fixed;
+    word-wrap:break-word;
+    word-break:break-all;
+}
+.lefttd{
+    padding-left:15px;
+    padding-right:15px;
+}
+.headRss{
+    margin-left:50px;padding-top:5px;width:100%;float:left;
+}
+
+#replaytext p{
+    color: red;
+}

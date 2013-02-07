@@ -12,5 +12,11 @@ indexes:
 
 - kind: Joke
   properties:
+  - name: date
+  - name: updateTime
+    direction: desc
+
+- kind: Joke
+  properties:
   - name: type
   - name: updateTime

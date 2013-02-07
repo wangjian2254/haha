@@ -9,9 +9,30 @@ class Joke(db.Model):
     img=db.TextProperty()
     type=db.IntegerProperty()
     isCheck=db.BooleanProperty(default=True)
+    date=db.StringProperty()
 #    replay=db.StringListProperty(indexed=False)
 #    good=db.IntegerProperty(default=0)
 #    bad=db.IntegerProperty(default=0)
+class UserJoke(db.Model):
+    username=db.StringProperty()
+    pwd=db.StringProperty(indexed=False)
+    nickname=db.StringProperty(indexed=False)
+
+class Replay(db.Model):
+    joke=db.StringProperty()
+    fatherid_id=db.IntegerProperty()
+    user=db.IntegerProperty()
+    content=db.TextProperty()
+    updateTime=db.DateTimeProperty()
+
+class ReplayGood(db.Model):
+    point=db.IntegerProperty()
+class ReplayBad(db.Model):
+    point=db.IntegerProperty()
+
+
+class DefaultDate(db.Model):
+    date=db.StringProperty()
 
 class JokeCheck(db.Model):
     lastCheckJoke=db.StringProperty()

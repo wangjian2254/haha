@@ -2,6 +2,7 @@
 #
 from check import checkHaHa
 from haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots
+from haha2 import listHaHa2, listHaHa_redict, lookHaHa2, HaHa2CommentList
 import login
 from weiboManage import Login, Login_check, PubWeib
 
@@ -30,7 +31,11 @@ import webapp2
 app = webapp2.WSGIApplication([
     ('/', listHaHa),
     ('/android', listHaHa),
-    ('/(\d+)/(\d+)/(\d+)/(j\d+)[/]{0,1}', listHaHa),
+    ('/(\d+)/(\d+)/(\d+)/(j\d+)[/]{0,1}', listHaHa_redict),
+#    ('/(\d+)/(\d+)/(\d+)/(j\d+)[/]{0,1}', listHaHa),
+    ('/(\d+)/(\d+)/(\d+)', listHaHa2),
+    ('/(j\d+).*', lookHaHa2),
+    ('/joke/commentList', HaHa2CommentList),
     ('/(\d+)/(\d+)[/]{0,1}', newHaHa),
     ('/getHaHa', getHaHa),
     ('/check', checkHaHa),

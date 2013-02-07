@@ -9,7 +9,7 @@ import urllib
 import urllib2
 import datetime
 from google.appengine.api import urlfetch
-from models.model import Joke,User
+from models.model import Joke,User, DefaultDate
 import setting
 import sinaWeibo
 import tengWeibo
@@ -27,6 +27,11 @@ __author__ = u'王健'
 headmap={'Referer':'http://www.haha.mx/good/day/1','Cookie':'MAXAUTH=NO','Host':'www.haha.mx',"User-Agent": "	Mozilla/5.0 (Windows NT 5.1; rv:9.0.1) Gecko/20100101 Firefox/9.0.1"}
 class getHaHa(Page):
     def get(self):
+        defaultDate=DefaultDate.get_by_key_name('date')
+        if not defaultDate:
+            defaultDate=DefaultDate(key_name='date')
+        defaultDate.date=datetime.datetime.now().strftime("%Y%m%d")
+        defaultDate.put()
         uri='http://www.haha.mx/good/day/'
 #        uri='http://sso.maxthon.cn/get.php?host=www.haha.mx%2FCommon%2Fsso%2Fmaxthon_passport_sso.php&url=%2Fgood%2Fday%2F'
         self.jokeset=set()
@@ -81,6 +86,7 @@ def skin(self,html):
             <img src='http://image.haha.mx/2012/01/18/small/242377_cc5fb6ff525c05fb833d0d973f344da5_1326872875.jpg' onerror='this.onerror=null;this.src="http://static.haha.mx/images/img-error.jpg"'/>
         </a>
     '''
+    defaultDate=DefaultDate.get_by_key_name('date')
     haha=re.findall('(?i)<div class=\'list-text\' id=\'listText-(\d+)\'[^>]*>(.*?)</div>',html)
     hahaimg=re.findall('(?i)<a [^>]*mark=\'(\d+)\'[^>]*>[^<]*?<img src=\'(.*?)\'[^>]*>[^<]*</a>',html)
     imgmap={}
@@ -93,6 +99,7 @@ def skin(self,html):
             joke= Joke.get_by_key_name('j'+idn)
             if not joke:
                 joke=Joke(key_name='j'+idn)
+                joke.date=defaultDate.date
                 num+1
             joke.joke= re.sub('(?i)<a [^>]*>[^<]*</a>','',re.sub('(?i)<[/]{0,1}[\w]{1,5} [^>]*>','',html_parser.unescape(txt)))
             if imgmap.has_key(idn):

@@ -1,0 +1,81 @@
+<form action="/joke/commentAdd" method="post">
+    <a name="replay"></a>
+
+<table cellpadding="0" cellspacing="0" width="900px" >
+    <tr>
+        <td height="45px">
+            昵称：
+        </td>
+        <td>
+            {{guest.nickname}}
+        </td>
+    </tr>
+    <tr>
+        <td height="55px">
+            头像：<input type="hidden" name="face" value="1" id="face"/>
+
+            <script type="text/javascript">
+                function selectFace(facename){
+                    for(var i=1;i<8;i++){
+                        document.getElementById('td'+i).style.background='#ffffff';
+                    }
+                    var facetd=document.getElementById('td'+facename);
+                    facetd.style.background='#c0c0c0';
+                    document.getElementById('face').value=facename;
+                }
+            </script>
+        </td>
+        <td>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td id="td1" style="background: #c0c0c0" align="center"><a href="javascript:selectFace('1')"><img src="/static/img/default/face/face1.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td2"  align="center"><a href="javascript:selectFace('2')"><img src="/static/img/default/face/face2.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td3"  align="center"><a href="javascript:selectFace('3')"><img src="/static/img/default/face/face3.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td4"  align="center"><a href="javascript:selectFace('4')"><img src="/static/img/default/face/face4.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td5"  align="center"><a href="javascript:selectFace('5')"><img src="/static/img/default/face/face5.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td6"  align="center"><a href="javascript:selectFace('6')"><img src="/static/img/default/face/face6.gif" width="48px" height="48px" border="0"/></a></td>
+                    <td id="td7"  align="center"><a href="javascript:selectFace('7')"><img src="/static/img/default/face/face7.gif" width="48px" height="48px" border="0"/></a></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            内容：
+        </td>
+        <td>
+            <script type="text/plain" id="editor" style="width:400px" name="comment"></script>
+        </td>
+    </tr>
+    <tr>
+        <td height="45px">
+            验证码：
+        </td>
+        <td valign="middle">
+            <div style="float: left;"><input type="text" name="imagecode" style="width: 120px;height: 20px;"/></div><div style="float: left;"><img src="/imagecode?nocache={{uuid}}" onclick="this.setAttribute('src','/imagecode?nocache='+(new Date()))" alt="验证码"/></div>
+        </td>
+    </tr>
+    <tr height="45px">
+        <td colspan="2" align="center">
+           <input type="submit" value="评论" style="width:60px;">{% if ha%}<input type="hidden" name="jokeid" value="{{ha.key().name()}}"/>{% endif%}<input id="commentid" type="hidden" name="commentid">
+        </td>
+    </tr>
+</table>
+</form>
+<script type="text/javascript">
+    $(function(){
+        $.ajax({type: "POST",
+                    url: "/blog/papercount",
+                    data:{jokeid:"{{ ha.key().name() }}"},
+                    dataType:'json',
+                    async: true,
+                    success: function(data){
+                           if(data.success){
+                               $('#showNumFont').html(data.showNum);
+                               $('#replayNumFont').html(data.replayNum);
+                           }
+                    }
+
+                });
+    });
+</script>
