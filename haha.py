@@ -87,8 +87,10 @@ def skin(self,html):
         </a>
     '''
     defaultDate=DefaultDate.get_by_key_name('date')
-    haha=re.findall('(?i)<div class=\'list-text\' id=\'listText-(\d+)\'[^>]*>(.*?)</div>',html)
-    hahaimg=re.findall('(?i)<a [^>]*mark=\'(\d+)\'[^>]*>[^<]*?<img src=\'(.*?)\'[^>]*>[^<]*</a>',html)
+    #haha=re.findall('(?i)<div class=\'list-text\' id=\'listText-(\d+)\'[^>]*>(.*?)</div>',html)
+    #hahaimg=re.findall('(?i)<a [^>]*mark=\'(\d+)\'[^>]*>[^<]*?<img src=\'(.*?)\'[^>]*>[^<]*</a>',html)
+    haha=re.findall('(?i)<div class=\"block joke-item\" id=\"joke-(\d+)\"[^>]*>(.*?)</div>',html)
+    hahaimg=re.findall('(?i)<a [^>]*id=\"thumbnail-(\d+)\"[^>]*>[^<]*?<img src=\"(.*?)\"[^>]*>',html)
     imgmap={}
     num=0
     for i,src in hahaimg:
@@ -101,7 +103,8 @@ def skin(self,html):
                 joke=Joke(key_name='j'+idn)
                 joke.date=defaultDate.date
                 num+1
-            joke.joke= re.sub('(?i)<a [^>]*>[^<]*</a>','',re.sub('(?i)<[/]{0,1}[\w]{1,5} [^>]*>','',html_parser.unescape(txt)))
+#            joke.joke= re.sub('(?i)<[/]{0,1}[\w]{1,5} [^>]*>','',re.sub('(?i)<a [^>]*>[^<]*</a>','',html_parser.unescape(txt)))
+            joke.joke= re.findall('(?i)<p [^>]*>(.*?)</p>',html_parser.unescape(txt))[0]
             if imgmap.has_key(idn):
                 joke.img=imgmap[idn]
                 joke.type=2
@@ -109,7 +112,7 @@ def skin(self,html):
                 joke.type=3
             joke.put()
 
-    logging.info(str(i))
+#    logging.info(str(i))
 #                self.jokelist.append({'id':idn,'txt':txt,'img':imgmap[idn]})
 #            else:
 #                self.jokelist.append({'id':idn,'txt':txt})
