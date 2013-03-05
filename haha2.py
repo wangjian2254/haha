@@ -1,10 +1,12 @@
 #coding=utf-8
-import datetime
 import json
 import uuid
 from google.appengine.api import memcache
+from loginmanage import get_current_user, getUser, setLogin
 from models.model import DefaultDate, Joke, Replay, UserJoke
 from tools.page import Page
+import datetime
+timezone=datetime.timedelta(hours =8)
 
 __author__ = '王健'
 
@@ -60,11 +62,18 @@ class listHaHa2(Page):
 class lookHaHa2(Page):
     def get(self,jokeid=None):
         html=memcache.get('joke'+jokeid)
-        if not html:
+        if not html :
             ha=Joke.get_by_key_name(jokeid)
             html=self.obj2str('templates/joke.html',{'ha':ha,'uuid':str(uuid.uuid4()),'guest':{}})
             memcache.set('joke'+jokeid,html,7200)
         self.flashhtml(html)
+class replayHaHa2(Page):
+    def post(self,jokeid=None):
+        num=memcache.get('replayjokenum'+jokeid)
+        if num==None:
+            num=Replay.all().filter('joke =',jokeid).count()
+            memcache.set('replayjokenum'+jokeid,num,720000)
+        self.flashhtml('{"success":true,"replaynum":%s}'%num)
 class HaHa2CommentList(Page):
     def get(self):
         jokeid=self.request.get('jokeid')
@@ -77,7 +86,7 @@ class HaHa2CommentList(Page):
                 rmap['jokeid']=replay.joke
                 rmap['face']=replay.face
                 rmap['content']=replay.content
-                rmap['createDate']=replay.createDate.strftime('%Y年%m月%d日 %H:%M:%S')
+                rmap['createDate']=replay.updateTime.strftime('%Y年%m月%d日 %H:%M:%S')
                 rmap['fatherid']=replay.fatherid_id
                 rmap['userid']=replay.user
                 rmap['username']=getUserName(replay.user)
@@ -85,12 +94,121 @@ class HaHa2CommentList(Page):
             html=json.dumps(replaylist)
             memcache.set('replayjoke'+jokeid,html,7200)
         self.flashhtml(html)
+class HaHa2CommentAdd(Page):
+    def post(self):
+        jokeid=self.request.get('jokeid')
+        face=self.request.get('face')
+        fatherid_id=self.request.get('fatherid_id')
+        content=self.request.get('content','')
+        content=content.replace('<','&lt;')
+        content=content.replace('>','&gt;')
+        user_joke=get_current_user(self)
+        replay=Replay()
+        replay.joke=jokeid
+        if fatherid_id:
+            replay.fatherid_id=int(fatherid_id)
+        replay.content=content
+        replay.face=int(face)
+        replay.user=user_joke.key().id()
+        replay.updateTime=datetime.datetime.utcnow()+timezone
+        replay.put()
+        num=memcache.get('replayjokenum'+jokeid)
+        if num!=None:
+            memcache.set('replayjokenum'+jokeid,num+1,720000)
+        memcache.delete('replayjoke'+jokeid)
+        self.redirect('/%s.html'%jokeid)
 
+
+class HaHa2getUser(Page):
+    def post(self):
+        user=get_current_user(self)
+        if not user:
+            self.flashhtml('{"success":false}')
+        else:
+            self.flashhtml('{"success":true,"nickname":"%s","userid":%s}'%(user.nickname,user.key().id()))
+
+
+class HaHa2Success(Page):
+    def get(self):
+        if 'login'==self.request.get('do','login'):
+            msg=u'登录'
+        elif 'reg'==self.request.get('do','login'):
+            msg=u'注册'
+        html=self.obj2str('templates/success.html',{'msg':msg})
+        self.flashhtml(html)
+class HaHa2Reg(Page):
+    def get(self):
+        html=self.obj2str('templates/reg.html',{'uuidstr':str(uuid.uuid4())})
+        self.flashhtml(html)
+    def post(self):
+        username=self.request.get('username')
+        password=self.request.get('password')
+        r_password=self.request.get('r_password')
+        nickname=self.request.get('nickname')
+        code=self.request.get('code','')
+        codename=self.request.get('codename','')
+        codestr=memcache.get(codename)
+        success=False
+        msg=u''
+        if username and password and r_password and nickname and len(nickname)>2 and len(username)>5 and len(password)>6:
+            if password!=r_password:
+                msg=u'密码和确认密码不一致'
+            else:
+                if codestr!=code:
+                    msg=u'验证码不正确'
+                else:
+                    userlist=UserJoke.all().filter('username =',username).fetch(1)
+                    if 0==len(userlist):
+                        import hashlib
+                        userjoke=UserJoke()
+                        userjoke.nickname=nickname
+                        userjoke.pwd=hashlib.md5(password).hexdigest().upper()
+                        userjoke.username=username
+                        userjoke.put()
+                        setLogin(self,userjoke.key().id())
+                        success=True
+                    else:
+                        msg=u'用户名已经存在'
+        else:
+            msg=u'用户名、密码、确认密码、昵称不能为空'
+        if success:
+            self.redirect('/joke/success?do=reg')
+        html=self.obj2str('templates/reg.html',{'uuidstr':str(uuid.uuid4()),'msg':msg,'username':username,'password':password,'nickname':nickname,'r_password':r_password})
+        self.flashhtml(html)
+class HaHa2Login(Page):
+    def get(self):
+        html=self.obj2str('templates/login.html',{'uuidstr':str(uuid.uuid4())})
+        self.flashhtml(html)
+    def post(self):
+        username=self.request.get('username')
+        password=self.request.get('password')
+        code=self.request.get('code','')
+        codename=self.request.get('codename','')
+        codestr=memcache.get(codename)
+        success=False
+        msg=u''
+        if username and password:
+            if codestr!=code:
+                msg=u'验证码不正确'
+            else:
+                userlist=UserJoke.all().filter('username =',username).fetch(1)
+                if 1==len(userlist):
+                    import hashlib
+                    if userlist[0].pwd==hashlib.md5(password).hexdigest().upper():
+                        success=True
+                        setLogin(self,userlist[0].key().id())
+                    else:
+                        msg=u'密码错误'
+                else:
+                    msg=u'用户名不存在'
+        else:
+            msg=u'用户名、密码不能为空'
+        if success:
+            self.redirect('/joke/success?do=login')
+        html=self.obj2str('templates/login.html',{'uuidstr':str(uuid.uuid4()),'msg':msg,'username':username,'password':password})
+        self.flashhtml(html)
 def getUserName(user):
-    user_joke=memcache.get('userbyid'+str(user))
-    if not user_joke:
-        user_joke=UserJoke.get_by_id(user)
-        memcache.set('userbyid'+str(user),user_joke,7200)
+    user_joke=getUser(user)
     return user_joke.nickname
 
 

@@ -20,3 +20,9 @@ indexes:
   properties:
   - name: type
   - name: updateTime
+
+- kind: Replay
+  properties:
+  - name: joke
+  - name: updateTime
+    direction: desc

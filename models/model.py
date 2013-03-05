@@ -20,6 +20,7 @@ class UserJoke(db.Model):
 
 class Replay(db.Model):
     joke=db.StringProperty()
+    face=db.IntegerProperty(default=1,indexed=False)
     fatherid_id=db.IntegerProperty()
     user=db.IntegerProperty()
     content=db.TextProperty()

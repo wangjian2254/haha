@@ -21,7 +21,7 @@
 
                 width: 900px;
                 text-align: left;
-
+                display: block;
                 background-color: #dff1ff;
                 padding-left:15px;
                 padding-right:15px;
@@ -30,7 +30,7 @@
 
                 width: 900px;
                 text-align: left;
-
+                display: block;
                 padding-left:15px;
                 padding-right:15px;
             }
@@ -43,11 +43,36 @@
                 text-align:right;
 
             }
+            .supera{
+                text-align: center;
+                font-size: 23px;
+            }
+            .supera span{
+                margin-left: 5px;
+                font-size: 23px;
+            }
+            .supera a{
+                margin-left: 5px;
+                font-size: 23px;
+
+            }
 
             .dd a{
-                font-size:12px;
+
                 font-weight:bold;
 
+            }
+            .pingjia0{
+                width: 100%;
+                display: block;
+                height: 30px;
+                text-align: right;
+            }
+            .pingjia0 a{
+                margin-left: 10px;
+            }
+            .pingjia0 span{
+                margin-left: 10px;
             }
             .ff{
 
