@@ -95,28 +95,44 @@ class HaHa2CommentList(Page):
             memcache.set('replayjoke'+jokeid,html,7200)
         self.flashhtml(html)
 class HaHa2CommentAdd(Page):
+    def get(self):
+        code=self.request.get('code','')
+        codename=self.request.get('codename','')
+        codestr=memcache.get(codename)
+        if codestr==code:
+            self.flashhtml('{"success":true}')
+        else:
+            self.flashhtml('{"success":false,"msg":"%s"}'%(u'验证码错误',))
     def post(self):
+        code=self.request.get('imagecode','')
+        codename=self.request.get('codename','')
+        codestr=memcache.get(codename)
+        success=False
+        msg=u''
         jokeid=self.request.get('jokeid')
         face=self.request.get('face')
         fatherid_id=self.request.get('fatherid_id')
         content=self.request.get('content','')
         content=content.replace('<','&lt;')
         content=content.replace('>','&gt;')
-        user_joke=get_current_user(self)
-        replay=Replay()
-        replay.joke=jokeid
-        if fatherid_id:
-            replay.fatherid_id=int(fatherid_id)
-        replay.content=content
-        replay.face=int(face)
-        replay.user=user_joke.key().id()
-        replay.updateTime=datetime.datetime.utcnow()+timezone
-        replay.put()
-        num=memcache.get('replayjokenum'+jokeid)
-        if num!=None:
-            memcache.set('replayjokenum'+jokeid,num+1,720000)
-        memcache.delete('replayjoke'+jokeid)
-        self.redirect('/%s.html'%jokeid)
+        if codestr==code:
+            user_joke=get_current_user(self)
+            replay=Replay()
+            replay.joke=jokeid
+            if fatherid_id:
+                replay.fatherid_id=int(fatherid_id)
+            replay.content=content
+            replay.face=int(face)
+            replay.user=user_joke.key().id()
+            replay.updateTime=datetime.datetime.utcnow()+timezone
+            replay.put()
+            num=memcache.get('replayjokenum'+jokeid)
+            if num!=None:
+                memcache.set('replayjokenum'+jokeid,num+1,720000)
+            memcache.delete('replayjoke'+jokeid)
+            self.redirect('/%s.html'%jokeid)
+        else:
+            self.redirect('/%s.html'%jokeid)
 
 
 class HaHa2getUser(Page):

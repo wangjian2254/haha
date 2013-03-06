@@ -50,7 +50,7 @@
             验证码：
         </td>
         <td valign="middle">
-            <div style="float: left;"><input type="text" name="imagecode" style="width: 120px;height: 20px;"/></div><div style="float: left;"><img src="/imagecode?imgcode={{uuid}}" onclick="this.setAttribute('src','/imagecode?imgcode={{uuid}}&nocode='+(new Date()))" alt="验证码"/></div>
+            <div style="float: left;"><input type="text" id="imagecode" name="imagecode" style="width: 120px;height: 20px;vertical-align: middle;"/></div><div style="float: left;"><img src="/imagecode?imgcode={{uuid}}" onclick="this.setAttribute('src','/imagecode?imgcode={{uuid}}&nocode='+(new Date()))" alt="验证码"/><input type="hidden"  name="codename" value="{{uuid}}"/></div>
         </td>
     </tr>
     <tr height="45px">
@@ -92,6 +92,24 @@
         art.dialog.open("/joke/login",{id:'showFenXiang',title: '登陆',lock: true, width: 600, height:400});
 
     }
+    function sub(){
+        $.ajax({type: "GET",
+                url: "/joke/commentAdd",
+                data:{code:$('#imagecode')[0].value,codename:"{{uuid}}"},
+                dataType:'json',
+                async: true,
+                success: function(data){
+                       if(data.success){
+                           //$('#showNumFont').html(data.showNum);
+                           $('#jokeform')[0].submit();
+
+                       }else{
+                           art.dialog({title:'提示',content:data.msg,icon:'warning',lock: true,ok:true});
+                       }
+                }
+
+            });
+    }
     function onSubmitJoke(){
         if($('#nickname').html()==''){
             $.ajax({type: "POST",
@@ -102,7 +120,7 @@
                        if(data.success){
                            //$('#showNumFont').html(data.showNum);
                            $('#nickname').html(data.nickname);
-                           $('#jokeform')[0].submit();
+                           sub();
 
                        }else{
                            loginOrReg();
@@ -110,6 +128,8 @@
                 }
 
             });
+        }else{
+            sub();
         }
     }
 </script>
