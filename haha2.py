@@ -55,7 +55,7 @@ class listHaHa2(Page):
                 nowpage='/%s/%s/%s'%(date,(p+1),limit)
             pagelist.append({'page':'/%s/%s/%s'%(date,(p+1),limit),'pagenum':p+1})
         html=self.obj2str('templates/result2.html',{'hahalist':hahamap.get('hahalist',[]),'pagelist':pagelist,'nowpage':nowpage,'pagenum':page,'limit':limit,'nowdate':date,'perdate':perdate,'afterdate':afterdate})
-        memcache.set('date'+date+'page'+str(page)+'limit'+str(limit),html,7200)
+        memcache.set('date'+date+'page'+str(page)+'limit'+str(limit),html,3600*5*page)
         self.flashhtml(html)
         return
 
@@ -65,7 +65,7 @@ class lookHaHa2(Page):
         if not html :
             ha=Joke.get_by_key_name(jokeid)
             html=self.obj2str('templates/joke.html',{'ha':ha,'uuid':str(uuid.uuid4()),'guest':{}})
-            memcache.set('joke'+jokeid,html,7200)
+            memcache.set('joke'+jokeid,html,720000)
         self.flashhtml(html)
 class replayHaHa2(Page):
     def post(self,jokeid=None):
