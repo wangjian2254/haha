@@ -25,9 +25,11 @@ class listHaHa2(Page):
         html=memcache.get('date'+date+'page'+str(page)+'limit'+str(limit))
         if html:
             return self.flashhtml(html)
+        perdate=(datetime.datetime.strptime(date,'%Y%m%d')-datetime.timedelta(hours =24)).strftime('%Y%m%d')
         if not afterdate:
-            perdate=(datetime.datetime.strptime(date,'%Y%m%d')-datetime.timedelta(hours =24)).strftime('%Y%m%d')
-        afterdate=(datetime.datetime.strptime(date,'%Y%m%d')+datetime.timedelta(hours =24)).strftime('%Y%m%d')
+            afterdate=(datetime.datetime.strptime(date,'%Y%m%d')+datetime.timedelta(hours =24)).strftime('%Y%m%d')
+        else:
+            afterdate=''
         if page:
             page=int(page)
         if limit:
