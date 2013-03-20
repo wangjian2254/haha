@@ -3,7 +3,7 @@
 from check import checkHaHa
 from haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots
 from haha2 import listHaHa2, listHaHa_redict, lookHaHa2, HaHa2CommentList, replayHaHa2, HaHa2CommentAdd, HaHa2getUser, HaHa2Login, HaHa2Success, HaHa2Reg
-from imgcode import ImgCode
+from imgcode import ImgCode,Baidu
 import login
 from weiboManage import Login, Login_check, PubWeib
 
@@ -38,6 +38,7 @@ app = webapp2.WSGIApplication([
     ('/(j\d+).*', lookHaHa2),
     ('/replay/(j\d+)', replayHaHa2),
     ('/imagecode',ImgCode),
+    (r'/d8fdbc.*',Baidu),
     ('/joke/commentList', HaHa2CommentList),
     ('/joke/commentAdd', HaHa2CommentAdd),
     ('/joke/getUser', HaHa2getUser),

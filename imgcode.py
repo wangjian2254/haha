@@ -18,4 +18,9 @@ class ImgCode(Page):
         self.response.out.write(img.img.dump())
 
 
+class Baidu(Page):
+    def get(self):
+        self.response.out.write("95083c7309aa026bb71de129552f83c9")
+
+
   
