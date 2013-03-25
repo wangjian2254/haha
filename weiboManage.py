@@ -70,7 +70,8 @@ def _oauth():
 
 class PubWeib(Page):
     def get(self):
-        textnum=110
+        textnum=98
+        addsubject=u'#趣图##搞笑##笑话#'
         jmark=PutWeibMark.get_by_key_name('mark')
         jlist=Joke.all()
         if jmark:
@@ -86,7 +87,7 @@ class PubWeib(Page):
             j=jlist[0]
             jmark.jokename=j.key().name()
             jmark.put()
-            j.joke=html_parser.unescape(j.joke)
+            j.joke=html_parser.unescape(j.joke.replace('绿','转'))
             j.put()
             j.joke=j.joke.replace('<br/>','')
             total=len(j.joke)/textnum
@@ -107,13 +108,13 @@ class PubWeib(Page):
                     if total>=m and total>1:
                         mark='(%s/%s)'%(m,total)
                         m+=1
-                    sendWeibo(self,j.joke[:textnum]+mark+'http://joke.zxxsbook.com/%s.html'%jmark.jokename,bf)
+                    sendWeibo(self,addsubject+j.joke[:textnum]+mark+'http://joke.zxxsbook.com/%s.html'%jmark.jokename,bf)
                     j.joke=j.joke[textnum:]
             while j.joke:
                 if total>=m and total>1:
                     mark='(%s/%s)'%(m,total)
                     m+=1
-                sendWeibo(self,'http://joke.zxxsbook.com/%s.html'%jmark.jokename+' '+j.joke[:textnum]+mark)
+                sendWeibo(self,'http://joke.zxxsbook.com/%s.html'%jmark.jokename+' '+j.joke[:textnum]+mark+addsubject)
                 j.joke=j.joke[textnum:]
         except Exception,e:
             logging.info('empty'+str(e))

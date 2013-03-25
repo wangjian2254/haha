@@ -141,6 +141,9 @@ body{
         height:100%;
         width:900px;
 }
+#biaoqian_detail a{
+    font-size: 12px;
+}
 #biaoqian_1{
     float: left;
     color: #968348;
@@ -161,9 +164,11 @@ body{
 #biaoqian a{
     margin-left: 5px;
     color: #968348;
+    font-size: 12px;
 }
 .top_line{
     border-top-style:dashed;
+    border-top-color: #d4d4d4;
     border-top-color: #d4d4d4;
     border-top-width: 2px;
 }
@@ -186,6 +191,10 @@ body{
     float: right;
     display: block;
     margin-right: 30px;
+
+}
+.page_android a{
+    font-size: 12px;
 }
 .page_baidu{
     float: right;

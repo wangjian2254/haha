@@ -56,6 +56,8 @@ class listHaHa2(Page):
             if (page-1)==p:
                 nowpage='/%s/%s/%s'%(date,(p+1),limit)
             pagelist.append({'page':'/%s/%s/%s'%(date,(p+1),limit),'pagenum':p+1})
+        if perdate==date:
+            perdate=''
         html=self.obj2str('templates/jokeindex.html',{'hahalist':hahamap.get('hahalist',[]),'pagelist':pagelist,'nowpage':nowpage,'pagenum':page,'limit':limit,'nowdate':date,'perdate':perdate,'afterdate':afterdate})
         memcache.set('date'+date+'page'+str(page)+'limit'+str(limit),html,3600*5*page)
         self.flashhtml(html)

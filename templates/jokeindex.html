@@ -91,7 +91,7 @@
             </table>
         </div>
         <div class="page_num">
-            {%if perdate %}&nbsp;&nbsp;<a href="/{{perdate}}/1/{{limit}}" class="page_button">前一天</a>{%endif%}{%for page in pagelist%}&nbsp;{%if page.page!=nowpage%}<a href="{{page.page}}" >{{page.pagenum}}</a>{%else%}<span style="color: orange;"  class="page_a">{{page.pagenum}}</span>{%endif%}{%endfor%}&nbsp;&nbsp;{%if afterdate%}<a href="/{{afterdate}}/1/{{limit}}"  class="page_button">后一天</a>{%endif%}
+            {%if afterdate %}<a href="/{{afterdate}}/1/{{limit}}"  class="page_button">前十页</a>{%endif%} {%for page in pagelist%}&nbsp;{%if page.page!=nowpage%}<a href="{{page.page}}" >{{page.pagenum}}</a>{%else%}<span style="color: orange;"  class="page_a">{{page.pagenum}}</span>{%endif%}{%endfor%}&nbsp;&nbsp;{%if perdate %}&nbsp;&nbsp;<a href="/{{perdate}}/1/{{limit}}" class="page_button">后十页</a>{%endif%}
 
         </div>
 
@@ -111,7 +111,7 @@
     <div class="ff" id="topdiv"><a href="#save">返<br>回<br>顶<br>层</a></div>
     <div class="page_bottom top_line">
             <div class="page_num">
-                {%if perdate %}&nbsp;&nbsp;<a href="/{{perdate}}/1/{{limit}}" class="page_button">前一天</a>{%endif%}{%for page in pagelist%}&nbsp;{%if page.page!=nowpage%}<a href="{{page.page}}" >{{page.pagenum}}</a>{%else%}<span style="color: orange;"  class="page_a">{{page.pagenum}}</span>{%endif%}{%endfor%}&nbsp;&nbsp;{%if afterdate%}<a href="/{{afterdate}}/1/{{limit}}"  class="page_button">后一天</a>{%endif%}
+                {%if afterdate %}<a href="/{{afterdate}}/1/{{limit}}"  class="page_button">前十页</a>{%endif%} {%for page in pagelist%}&nbsp;{%if page.page!=nowpage%}<a href="{{page.page}}" >{{page.pagenum}}</a>{%else%}<span style="color: orange;"  class="page_a">{{page.pagenum}}</span>{%endif%}{%endfor%}&nbsp;&nbsp;{%if perdate %}&nbsp;&nbsp;<a href="/{{perdate}}/1/{{limit}}" class="page_button">后十页</a>{%endif%}
 
             </div>
 

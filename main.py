@@ -1,7 +1,7 @@
 #coding=utf-8
 #
 from check import checkHaHa
-from haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots
+from haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots, Robots2
 from haha2 import listHaHa2, listHaHa_redict, lookHaHa2, HaHa2CommentList, replayHaHa2, HaHa2CommentAdd, HaHa2getUser, HaHa2Login, HaHa2Success, HaHa2Reg
 from imgcode import ImgCode,Baidu
 import login
@@ -57,6 +57,7 @@ app = webapp2.WSGIApplication([
     ('/login_check',login.Login_check),
     ('/SendWeibo',SendWeibo),
     (r'/robots.txt',Robots),
+    (r'/root.txt',Robots2),
 
 
 

@@ -372,6 +372,10 @@ class Robots(Page):
 Disallow: /20/
 Allow: /'''
         self.response.out.write(html)
+class Robots2(Page):
+    def get(self):
+        html='''c2278205f548d4109de2ee05c75cd9a2'''
+        self.response.out.write(html)
 
 
 
