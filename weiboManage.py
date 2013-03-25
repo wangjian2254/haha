@@ -87,7 +87,7 @@ class PubWeib(Page):
             j=jlist[0]
             jmark.jokename=j.key().name()
             jmark.put()
-            j.joke=html_parser.unescape(j.joke.replace('绿','转'))
+            j.joke=html_parser.unescape(j.joke.replace(u'绿',u'转'))
             j.put()
             j.joke=j.joke.replace('<br/>','')
             total=len(j.joke)/textnum
