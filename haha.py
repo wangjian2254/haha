@@ -374,7 +374,7 @@ Allow: /'''
         self.response.out.write(html)
 class Robots2(Page):
     def get(self):
-        html='''c2278205f548d4109de2ee05c75cd9a2'''
+        html='''5b8a2b991bcfc3bb86a9d01bf7b4a37f'''
         self.response.out.write(html)
 
 

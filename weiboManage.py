@@ -108,13 +108,13 @@ class PubWeib(Page):
                     if total>=m and total>1:
                         mark='(%s/%s)'%(m,total)
                         m+=1
-                    sendWeibo(self,addsubject+j.joke[:textnum]+mark+'http://joke.zxxsbook.com/%s.html'%jmark.jokename,bf)
+                    sendWeibo(self,addsubject+j.joke[:textnum]+mark+'http://joke.123fangsong.com/%s.html'%jmark.jokename,bf)
                     j.joke=j.joke[textnum:]
             while j.joke:
                 if total>=m and total>1:
                     mark='(%s/%s)'%(m,total)
                     m+=1
-                sendWeibo(self,'http://joke.zxxsbook.com/%s.html'%jmark.jokename+' '+j.joke[:textnum]+mark+addsubject)
+                sendWeibo(self,'http://joke.123fangsong.com/%s.html'%jmark.jokename+' '+j.joke[:textnum]+mark+addsubject)
                 j.joke=j.joke[textnum:]
         except Exception,e:
             logging.info('empty'+str(e))

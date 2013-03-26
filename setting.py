@@ -9,4 +9,4 @@ TEMPLATE_DIR=os.path.dirname(__file__)
 
 ADTime=50
 aPhoneVerson=1.2
-aPhoneURI='http://joke.zxxsbook.com/'
+aPhoneURI='http://joke.123fangsong.com/'

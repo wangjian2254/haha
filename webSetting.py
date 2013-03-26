@@ -20,7 +20,7 @@ qqconsumer_key='801095361'
 qqconsumer_secret='f373f4aa6389ba8e3b0eae209d655f68'
 
 
-WEIBOURL='http://joke.zxxsbook.com'
+WEIBOURL='http://joke.123fangsong.com'
 
 sinawebtext=u'[来自 @现在的生活就是个笑话 '+WEIBOURL+']'
 wywebtext=u'[来自 @这个生活就是个笑话 '+WEIBOURL+']'
