@@ -1,17 +1,18 @@
 #coding=utf-8
 #Date: 11-12-8
 #Time: 下午10:28
+from datetime import datetime
 import logging
 import webSetting
-from weibopy.api import API
-from weibopy.auth import OAuthHandler
+#from weibopy.api import API
+#from weibopy.auth import OAuthHandler
+import  weibo
 __author__ = u'王健'
 
-def getApi(token,secret):
-    auth = OAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
-    auth.setToken(token, secret)
-    api = API(auth)
-    return api
+def getApi(username,secret,t):
+    auth = weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/login_check?username='+username+'&data='+str(datetime.now())+'&website=sina')
+    auth.set_access_token( secret,int(t))
+    return auth
 
 def getFriends(token,secret):
     l=[]
@@ -59,10 +60,10 @@ def getUserByWeibo(token,secret,userid=None,last=None):
         logging.info('sina'+str(e))
     return result
 
-def sendWeibosina(token,secret,text):
+def sendWeibosina(username,secret,t,text):
     try:
-        api=getApi(token,secret)
-        result=api.update_status(status=text[:139].encode('utf-8'))
+        api=getApi(username,secret,t)
+        result=api.statuses.update.post(status=text[:139].encode('utf-8'))
         return True
     except  Exception,e:
         logging.info('sina send fail')

@@ -304,7 +304,7 @@ class SendWeibo(Page):
                 text=joke.joke
                 isSuccess=False
                 while text:
-                    if sinaWeibo.sendWeibosina(user.sinaToken,user.sinaSecret,text[:90]+sinawebtext):
+                    if sinaWeibo.sendWeibosina(username,user.sinaSecret,user.sinaExpires,text[:90]+sinawebtext):
                         isSuccess=True
                     text=text[90:]
                 if isSuccess:

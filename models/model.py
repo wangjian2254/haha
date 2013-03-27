@@ -42,6 +42,7 @@ class UserAccessToken(db.Model):
     sinauserid=db.StringProperty()#新浪用户id
     sinaSecret=db.StringProperty()#新浪微博的用户授权
     sinaToken=db.StringProperty()
+    sinaExpires=db.StringProperty()
     sinaisright=db.BooleanProperty(default=False)
     qqSecret=db.StringProperty()#新浪微博的用户授权
     qqToken=db.StringProperty()
@@ -64,6 +65,7 @@ class User(db.Model):
     nick=db.StringProperty(indexed=False)
     sinaSecret=db.StringProperty(indexed=False)
     sinaToken=db.StringProperty(indexed=False)
+    sinaExpires=db.StringProperty(indexed=False)
     wySecret=db.StringProperty(indexed=False)
     wyToken=db.StringProperty(indexed=False)
     tengSecret=db.StringProperty(indexed=False)

@@ -2,39 +2,42 @@
 from datetime import datetime
 import urllib
 import logging
+import json
 from t4py.tblog.tblog import TBlog
 from tools.page import Page
 import webSetting
 from models.model import User
+import weibo
+
 __author__ = 'Administrator'
 
 from google.appengine.api import urlfetch
-from weibopy import OAuthHandler, oauth, WeibopError
+#from weibopy import OAuthHandler, oauth, WeibopError
 from google.appengine.api import memcache
 from google.appengine.api import users
 from qqweibo import  OAuthHandler as qqOAuthHandler
 from qqweibo import  API,JSONParser
 
-
-class WebOAuthHandler(OAuthHandler):
-    user_id=None
-    def get_authorization_url_with_callback(self, callback, signin_with_twitter=False):
-        """Get the authorization URL to redirect the user"""
-        try:
-            # get the request token
-            self.request_token = self._get_request_token()
-
-            # build auth request and return as url
-            if signin_with_twitter:
-                url = self._get_oauth_url('authenticate')
-            else:
-                url = self._get_oauth_url('authorize')
-            request = oauth.OAuthRequest.from_token_and_callback(
-                token=self.request_token, callback=callback, http_url=url
-            )
-            return request.to_url()
-        except Exception, e:
-            raise WeibopError(e)
+#
+#class WebOAuthHandler(OAuthHandler):
+#    user_id=None
+#    def get_authorization_url_with_callback(self, callback, signin_with_twitter=False):
+#        """Get the authorization URL to redirect the user"""
+#        try:
+#            # get the request token
+#            self.request_token = self._get_request_token()
+#
+#            # build auth request and return as url
+#            if signin_with_twitter:
+#                url = self._get_oauth_url('authenticate')
+#            else:
+#                url = self._get_oauth_url('authorize')
+#            request = oauth.OAuthRequest.from_token_and_callback(
+#                token=self.request_token, callback=callback, http_url=url
+#            )
+#            return request.to_url()
+#        except Exception, e:
+#            raise WeibopError(e)
 
 #class MainPage(PublicPage):
 #  def get(self):
@@ -44,10 +47,10 @@ class WebOAuthHandler(OAuthHandler):
 #    if referer_url.startswith('http') and host not in referer_url:
 #        referer_url = '/' # 避免外站直接跳到登录页而发生跳转错误
 #    return referer_url
-
-def _oauth():
-    """获取oauth认证类"""
-    return WebOAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
+#
+#def _oauth():
+#    """获取oauth认证类"""
+#    return WebOAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
 
 class Login(Page):
   def get(self):
@@ -60,10 +63,11 @@ class Login(Page):
 
     if 'sina'==website:
         login_backurl =webSetting.WEIBOURL+'/login_check?username='+username+'&data='+str(datetime.now())+'&website=sina'
-        auth_client = _oauth()
-        auth_url = auth_client.get_authorization_url_with_callback(login_backurl)
+        auth_client = weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret, login_backurl)
+
+        auth_url = auth_client.get_authorize_url()
         # 保存request_token，用户登录后需要使用它来获取access_token
-        memcache.Client().set(username+"_request_token1",auth_client.request_token,36000)
+#        memcache.Client().set(username+"_request_token1",auth_client.request_token,36000)
         # 跳转到登录页面
         return self.redirect(auth_url)
     elif 'wy'==website:
@@ -98,23 +102,38 @@ class Login_check(Page):
     if 'sina'==website:
         """用户成功登录授权后，会回调此方法，获取access_token，完成授权"""
         # http://mk2.com/?oauth_token=c30fa6d693ae9c23dd0982dae6a1c5f9&oauth_verifier=603896
-        verifier = self.request.get('oauth_verifier', None)
-        if not username:
-            return
-        auth_client = _oauth()
-        # 设置之前保存在session的request_token
-    #    request_token = request.session['oauth_request_token']
-        request_token=memcache.Client().get(username+"_request_token1")
-        if not request_token:
-            return
-        memcache.Client().delete(username+"_request_token1")
-    #    del request.session['oauth_request_token']
-
-        auth_client.set_request_token(request_token.key, request_token.secret)
-        access_token = auth_client.get_access_token(verifier)
+#        verifier = self.request.get('oauth_verifier', None)
+#        if not username:
+#            return
+#        auth_client = _oauth()
+#        # 设置之前保存在session的request_token
+#    #    request_token = request.session['oauth_request_token']
+#        request_token=memcache.Client().get(username+"_request_token1")
+#        if not request_token:
+#            return
+#        memcache.Client().delete(username+"_request_token1")
+#    #    del request.session['oauth_request_token']
+#
+#        auth_client.set_request_token(request_token.key, request_token.secret)
+#        access_token = auth_client.get_access_token(verifier)
+        code=self.request.get('code','')
+        client = weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/login_check?username='+username+'&data='+str(datetime.now())+'&website=sina')
+        r = client.request_access_token(code)
+#        logging.info('access token: %s' % json.dumps(r))
+        access_token, expires_in, uid = r.access_token, r.expires_in, r.uid
+#        client.set_access_token(access_token, expires_in)
+#        logging.info('access token: %s' % json.dumps(access_token))
+#        u = client.users.show.get(uid=uid)
         # 保存access_token，以后访问只需使用access_token即可
-        user.sinaToken=access_token.key
-        user.sinaSecret=access_token.secret
+#        userAccessToken.sinaSecret=access_token.secret
+#        userAccessToken.sinaToken=access_token.key
+#        userAccessToken.sinaExpires=expires_in
+#        userAccessToken.sinauserid=uid
+#        userAccessToken.sinaisright=True
+#        userAccessToken.put()
+        # 保存access_token，以后访问只需使用access_token即可
+        user.sinaSecret=access_token
+        user.sinaExpires=str(expires_in)
         user.put()
 #        pam={'key0':'sinaSecret','value0':access_token.secret,'key1':'sinaToken','value1':access_token.key}
 #        syncMogu(username,pam)

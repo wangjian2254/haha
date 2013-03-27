@@ -10,14 +10,17 @@ import webSetting
 from weibopy.api import API
 from t4py.http.oauth import OAuthToken
 from t4py.example import json
+import json as sysjson
+
 from google.appengine.ext import webapp
 
 __author__ = 'wangjian2254'
 
-from weibopy import OAuthHandler, oauth, WeibopError
+#from weibopy import OAuthHandler, oauth, WeibopError
 from google.appengine.api import memcache, urlfetch
 from qqweibo.auth import  OAuthHandler as qqOAuthHandler
 from qqweibo.api import  API as qqAPI
+import weibo
 import HTMLParser
 html_parser = HTMLParser.HTMLParser()
 
@@ -34,26 +37,26 @@ html_parser = HTMLParser.HTMLParser()
 #      url = users.create_logout_url(self.request.uri)
 #      template_values = {'url':url,'webouser':userwebo}
 #      self.render('templates/index.html',template_values)
-
-class WebOAuthHandler(OAuthHandler):
-    user_id=None
-    def get_authorization_url_with_callback(self, callback, signin_with_twitter=False):
-        """Get the authorization URL to redirect the user"""
-        try:
-            # get the request token
-            self.request_token = self._get_request_token()
-
-            # build auth request and return as url
-            if signin_with_twitter:
-                url = self._get_oauth_url('authenticate')
-            else:
-                url = self._get_oauth_url('authorize')
-            request = oauth.OAuthRequest.from_token_and_callback(
-                token=self.request_token, callback=callback, http_url=url
-            )
-            return request.to_url()
-        except Exception, e:
-            raise WeibopError(e)
+#
+#class WebOAuthHandler(OAuthHandler):
+#    user_id=None
+#    def get_authorization_url_with_callback(self, callback, signin_with_twitter=False):
+#        """Get the authorization URL to redirect the user"""
+#        try:
+#            # get the request token
+#            self.request_token = self._get_request_token()
+#
+#            # build auth request and return as url
+#            if signin_with_twitter:
+#                url = self._get_oauth_url('authenticate')
+#            else:
+#                url = self._get_oauth_url('authorize')
+#            request = oauth.OAuthRequest.from_token_and_callback(
+#                token=self.request_token, callback=callback, http_url=url
+#            )
+#            return request.to_url()
+#        except Exception, e:
+#            raise WeibopError(e)
 
 #class MainPage(PublicPage):
 #  def get(self):
@@ -63,10 +66,10 @@ class WebOAuthHandler(OAuthHandler):
 #    if referer_url.startswith('http') and host not in referer_url:
 #        referer_url = '/' # 避免外站直接跳到登录页而发生跳转错误
 #    return referer_url
-
-def _oauth():
-    """获取oauth认证类"""
-    return WebOAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
+#
+#def _oauth():
+#    """获取oauth认证类"""
+#    return WebOAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
 
 class PubWeib(Page):
     def get(self):
@@ -130,6 +133,11 @@ class Login(Page):
 #    back_to_url = _get_referer_url(request)
 #    request.session['login_back_to_url'] = back_to_url
     website=self.request.get('website')
+#    userAccessToken=UserAccessToken()
+#    userAccessToken.sinaExpires='1522066881'
+#    userAccessToken.sinaSecret='2.00HGNhqCdb1iQBb8eed27af80MRd2r'
+#    userAccessToken.put()
+#    logging.info(str(UserAccessToken().all().count()))
 
     # 获取oauth认证url
 #    setting=Setting().all().fetch(1)
@@ -138,14 +146,15 @@ class Login(Page):
 #    else:
 #        return
     if 'sina'==website:
-        login_backurl =self.request.host_url+'/Admin/login_check?website=sina'
-        auth_client = _oauth()
-        auth_url = auth_client.get_authorization_url_with_callback(login_backurl)
+        login_backurl =webSetting.WEIBOURL+'/Admin/login_check?website=sina'
+        auth_client = weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret, login_backurl)
+
+        auth_url = auth_client.get_authorize_url()
         # 保存request_token，用户登录后需要使用它来获取access_token
-        user_request_token=memcache.Client().get(website+"_request_token1")
-        if not user_request_token:
-            user_request_token= auth_client.request_token
-            memcache.Client().set(website+"_request_token1",user_request_token,36000)
+#        user_request_token=memcache.Client().get(website+"_request_token1")
+#        if not user_request_token:
+#            user_request_token= auth_client.request_token
+#            memcache.Client().set(website+"_request_token1",user_request_token,36000)
         # 跳转到登录页面
         return self.redirect(auth_url)
     elif 'wy'==website:
@@ -178,22 +187,32 @@ class Login_check(Page):
     if 'sina'==website:
         """用户成功登录授权后，会回调此方法，获取access_token，完成授权"""
         # http://mk2.com/?oauth_token=c30fa6d693ae9c23dd0982dae6a1c5f9&oauth_verifier=603896
-        verifier = self.request.get('oauth_verifier', None)
-        auth_client = _oauth()
-        # 设置之前保存在session的request_token
-    #    request_token = request.session['oauth_request_token']
-        request_token=memcache.Client().get(website+"_request_token1")
-        if not request_token:
-            return
-        memcache.Client().delete(website+"_request_token1")
-    #    del request.session['oauth_request_token']
+#        verifier = self.request.get('oauth_verifier', None)
+#        auth_client = _oauth()
+#        # 设置之前保存在session的request_token
+#    #    request_token = request.session['oauth_request_token']
+#        request_token=memcache.Client().get(website+"_request_token1")
+#        if not request_token:
+#            return
+#        memcache.Client().delete(website+"_request_token1")
+#    #    del request.session['oauth_request_token']
+#
+#        auth_client.set_request_token(request_token.key, request_token.secret)
+#        access_token = auth_client.get_access_token(verifier)
+        code=self.request.get('code')
+        logging.info('code:'+code)
+        client = weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/Admin/login_check?website=sina')
+        r = client.request_access_token(code)
 
-        auth_client.set_request_token(request_token.key, request_token.secret)
-        access_token = auth_client.get_access_token(verifier)
+        access_token, expires_in, uid = r.access_token, r.expires_in, r.uid
+        client.set_access_token(access_token, expires_in)
+        logging.info('access token: %s' % sysjson.dumps(access_token))
+        u = client.users.show.get(uid=uid)
         # 保存access_token，以后访问只需使用access_token即可
-        userAccessToken.sinaSecret=access_token.secret
-        userAccessToken.sinaToken=access_token.key
-        userAccessToken.sinauserid=auth_client.user_id
+        userAccessToken.sinaSecret=access_token
+#        userAccessToken.sinaToken=access_token.key
+        userAccessToken.sinaExpires=str(expires_in)
+        userAccessToken.sinauserid=uid
         userAccessToken.sinaisright=True
         userAccessToken.put()
     elif 'wy'==website:
@@ -227,6 +246,7 @@ class Login_check(Page):
     return self.redirect('/Admin')
 
 def sendWeibo(self,text,imgno=None):
+#    logging.info(text)
     if not sendSinaWeibo(self,text,imgno):
         sendSinaWeibo(self,text)
     if not sendWangYiWeibo(self,text,imgno):
@@ -239,9 +259,9 @@ def sendSinaWeibo(self,text,imgno=None):
         useracc=userAccessToken[0]
     else:
         return True
-    self.auth = OAuthHandler(webSetting.xlconsumer_key, webSetting.xlconsumer_secret)
-    self.auth.setToken(useracc.sinaToken, useracc.sinaSecret)
-    self.api = API(self.auth)
+    self.auth=weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/Admin/login_check?website=sina')
+    self.auth.set_access_token(useracc.sinaSecret, int(useracc.sinaExpires))
+
 
 
 
@@ -256,16 +276,17 @@ def sendSinaWeibo(self,text,imgno=None):
 #                    follow_redirects = True,deadline=10)
 #                if image.status_code==200:
 #                    bf=db.Blob(image.content)
-                    result=self.api.upload(filename=imgno,status=text.encode('utf-8'))
+                    result=self.auth.statuses.upload.post(pic=imgno,status=text.encode('utf-8'))
 #                else:
 #                    result=self.api.update_status(status=text[:139].encode('utf-8'))
         else:
-            result=self.api.update_status(status=text.encode('utf-8'))
+            result=self.auth.statuses.update.post(status=text.encode('utf-8'))
     except Exception,e:
         logging.info('sina'+str(e))
-        if str(e).find('40025')==-1:
-            self.error(500)
-            return False
+        return False
+#        if str(e).find('40025')==-1:
+#            self.error(500)
+#            return False
     else:
         return True
 
