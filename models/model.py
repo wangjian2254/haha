@@ -72,5 +72,10 @@ class User(db.Model):
     tengToken=db.StringProperty(indexed=False)
 
 
+
+class HtmlPage(db.Model):
+    html=db.TextProperty(verbose_name=u'html页面的内容')
+
+
     
   

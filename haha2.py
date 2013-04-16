@@ -6,6 +6,10 @@ from loginmanage import get_current_user, getUser, setLogin
 from models.model import DefaultDate, Joke, Replay, UserJoke
 from tools.page import Page
 import datetime
+
+from htmltools import get as memcache_get
+from htmltools import set as memcache_set
+from htmltools import delete as memcache_delete
 timezone=datetime.timedelta(hours =8)
 
 __author__ = '王健'
@@ -22,7 +26,7 @@ class listHaHa2(Page):
             date=defaultdate.date
             afterdate='flage'
 
-        html=memcache.get('date'+date+'page'+str(page)+'limit'+str(limit))
+        html=memcache_get('date'+date+'page'+str(page)+'limit'+str(limit))
         if html:
             return self.flashhtml(html)
         perdate=(datetime.datetime.strptime(date,'%Y%m%d')-datetime.timedelta(hours =24)).strftime('%Y%m%d')
@@ -59,17 +63,17 @@ class listHaHa2(Page):
         if perdate==date:
             perdate=''
         html=self.obj2str('templates/jokeindex.html',{'hahalist':hahamap.get('hahalist',[]),'pagelist':pagelist,'nowpage':nowpage,'pagenum':page,'limit':limit,'nowdate':date,'perdate':perdate,'afterdate':afterdate})
-        memcache.set('date'+date+'page'+str(page)+'limit'+str(limit),html,3600*5*page)
+        memcache_set('date'+date+'page'+str(page)+'limit'+str(limit),html,3600*5*page)
         self.flashhtml(html)
         return
 
 class lookHaHa2(Page):
     def get(self,jokeid=None):
-        html=memcache.get('joke'+jokeid)
+        html=memcache_get('joke'+jokeid)
         if not html :
             ha=Joke.get_by_key_name(jokeid)
             html=self.obj2str('templates/jokedetail.html',{'ha':ha,'uuid':str(uuid.uuid4()),'guest':{}})
-            memcache.set('joke'+jokeid,html,720000)
+            memcache_set('joke'+jokeid,html,720000)
         self.flashhtml(html)
 class replayHaHa2(Page):
     def post(self,jokeid=None):
@@ -81,7 +85,7 @@ class replayHaHa2(Page):
 class HaHa2CommentList(Page):
     def get(self):
         jokeid=self.request.get('jokeid')
-        html=memcache.get('replayjoke'+jokeid)
+        html=memcache_get('replayjoke'+jokeid)
         if not html:
             replaylist=[]
             for replay in Replay.all().filter('joke =',jokeid).order('-updateTime'):
@@ -96,7 +100,7 @@ class HaHa2CommentList(Page):
                 rmap['username']=getUserName(replay.user)
                 replaylist.append(rmap)
             html=json.dumps(replaylist)
-            memcache.set('replayjoke'+jokeid,html,7200)
+            memcache_set('replayjoke'+jokeid,html,7200)
         self.flashhtml(html)
 class HaHa2CommentAdd(Page):
     def get(self):
@@ -133,7 +137,7 @@ class HaHa2CommentAdd(Page):
             num=memcache.get('replayjokenum'+jokeid)
             if num!=None:
                 memcache.set('replayjokenum'+jokeid,num+1,720000)
-            memcache.delete('replayjoke'+jokeid)
+            memcache_delete('replayjoke'+jokeid)
             self.redirect('/%s.html'%jokeid)
         else:
             self.redirect('/%s.html'%jokeid)
