@@ -40,7 +40,7 @@ app = webapp2.WSGIApplication([
     ('/(j\d+).*', lookHaHa2),
     ('/replay/(j\d+)', replayHaHa2),
     ('/imagecode',ImgCode),
-    (r'/d8fdbc.*',Baidu),
+    (r'/bdunion.*',Baidu),
     ('/joke/commentList', HaHa2CommentList),
     ('/joke/commentAdd', HaHa2CommentAdd),
     ('/joke/getUser', HaHa2getUser),

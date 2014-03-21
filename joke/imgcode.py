@@ -22,7 +22,7 @@ class ImgCode(Page):
 
 class Baidu(Page):
     def get(self):
-        self.response.out.write("95083c7309aa026bb71de129552f83c9")
+        self.response.out.write("00242beb80964cb2c1ed6bd3b7593944")
 
 
   
