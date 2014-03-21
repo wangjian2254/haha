@@ -3,10 +3,10 @@
 #Time: 下午10:28
 from datetime import datetime
 import logging
+from pubweibo import weibo
 import webSetting
 #from weibopy.api import API
 #from weibopy.auth import OAuthHandler
-import  weibo
 __author__ = u'王健'
 
 def getApi(username,secret,t):

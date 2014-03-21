@@ -1,15 +1,18 @@
 #coding=utf-8
 import json
 import uuid
-from google.appengine.api import memcache
-from loginmanage import get_current_user, getUser, setLogin
-from models.model import DefaultDate, Joke, Replay, UserJoke
-from tools.page import Page
 import datetime
 
-from htmltools import get as memcache_get
-from htmltools import set as memcache_set
-from htmltools import delete as memcache_delete
+from google.appengine.api import memcache
+
+from joke.loginmanage import get_current_user, getUser, setLogin
+from models.model import DefaultDate,  Replay, UserJoke, NewJoke
+from tools.page import Page
+from joke.htmltools import get as memcache_get
+from joke.htmltools import set as memcache_set
+from joke.htmltools import delete as memcache_delete
+
+
 timezone=datetime.timedelta(hours =8)
 
 __author__ = '王健'
@@ -41,7 +44,7 @@ class listHaHa2(Page):
         hahamap=memcache.get('query:date'+date+'page'+str(page)+'limit'+str(limit))
         if not hahamap:
             hahalist=[]
-            for joke in Joke.all().filter('date =',date).order('-updateTime'):
+            for joke in NewJoke.all().filter('date =',date).order('-updateTime'):
                 hahalist.append(joke)
             total=int(len(hahalist)/limit)
             for i in range(total):
@@ -71,7 +74,7 @@ class lookHaHa2(Page):
     def get(self,jokeid=None):
         html=memcache_get('joke'+jokeid)
         if not html :
-            ha=Joke.get_by_key_name(jokeid)
+            ha=NewJoke.get_by_key_name(jokeid)
             html=self.obj2str('templates/jokedetail.html',{'ha':ha,'uuid':str(uuid.uuid4()),'guest':{}})
             memcache_set('joke'+jokeid,html,720000)
         self.flashhtml(html)

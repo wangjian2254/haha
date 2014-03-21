@@ -1,11 +1,12 @@
 #coding=utf-8
 #
-from check import checkHaHa
-from haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots, Robots2
-from haha2 import listHaHa2, listHaHa_redict, lookHaHa2, HaHa2CommentList, replayHaHa2, HaHa2CommentAdd, HaHa2getUser, HaHa2Login, HaHa2Success, HaHa2Reg
-from imgcode import ImgCode,Baidu
-import login
-from weiboManage import Login, Login_check, PubWeib
+from joke.check import checkHaHa
+from joke import login
+from joke.haha import getHaHa, newHaHa, listHaHa, getJokeByPhone, Reg, SendWeibo, Robots, Robots2
+from joke.haha2 import listHaHa2, listHaHa_redict, lookHaHa2, HaHa2CommentList, replayHaHa2, HaHa2CommentAdd, HaHa2getUser, HaHa2Login, HaHa2Success, HaHa2Reg
+from joke.imgcode import ImgCode,Baidu
+from joke.views import delJoke
+from pubweibo.weiboManage import Login, Login_check, PubWeib
 
 
 __author__ = u'王健'
@@ -30,6 +31,7 @@ import webapp2
 
 
 app = webapp2.WSGIApplication([
+    ('/delJoke', delJoke),
     ('/', listHaHa2),
     ('/android', listHaHa),
     ('/(\d+)/(\d+)/(\d+)/(j\d+)[/]{0,1}', listHaHa_redict),
@@ -53,8 +55,8 @@ app = webapp2.WSGIApplication([
     (r'/Admin/login_check',Login_check),
     ('/PubWeibo',PubWeib),
     ('/Reg',Reg),
-    ('/login',login.Login),
-    ('/login_check',login.Login_check),
+    ('/login', login.Login),
+    ('/login_check', login.Login_check),
     ('/SendWeibo',SendWeibo),
     (r'/robots.txt',Robots),
     (r'/root.txt',Robots2),

@@ -6,6 +6,10 @@ cron:
   url: /PubWeibo
   schedule: every 10 minutes
 
+- description: auto send weibo
+  url: /delJoke
+  schedule: every 1 minutes
+
 
 
 

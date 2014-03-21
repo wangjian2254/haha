@@ -15,6 +15,7 @@ def get(keyName):
     if not html:
         h=HtmlPage.get_by_key_name(keyName)
         if h:
+            h.delete()
             memcache.set(keyName,h.html,3600*24)
         else:
             return None
@@ -24,15 +25,15 @@ def get(keyName):
 
 
 def set(keyName,html,timeNum):
-    h=HtmlPage.get_by_key_name(keyName)
-    if h:
-        h.html=html
-        h.put()
-    else:
-        h=HtmlPage(key_name=keyName)
-        h.html=html
-        h.put()
-    memcache.set(keyName,h.html,timeNum)
+    # h=HtmlPage.get_by_key_name(keyName)
+    # if h:
+    #     h.html=html
+    #     h.put()
+    # else:
+    #     h=HtmlPage(key_name=keyName)
+    #     h.html=html
+    #     h.put()
+    memcache.set(keyName,html,timeNum)
 
 
 def delete(keyName):

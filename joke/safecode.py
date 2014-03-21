@@ -12,7 +12,9 @@
 
 import md5
 import random
-from pngcanvas import PNGCanvas
+
+from joke.pngcanvas import PNGCanvas
+
 
 class ImageCode():
     text = None

@@ -21,6 +21,12 @@ indexes:
   - name: type
   - name: updateTime
 
+- kind: NewJoke
+  properties:
+  - name: date
+  - name: updateTime
+    direction: desc
+
 - kind: Replay
   properties:
   - name: joke

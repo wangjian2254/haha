@@ -3,6 +3,7 @@ import logging
 import datetime
 from google.appengine.ext import db
 from models.model import UserAccessToken, PutWeibMark, Joke
+from pubweibo import weibo
 
 from t4py.tblog.tblog import TBlog
 from tools.page import Page
@@ -20,7 +21,6 @@ __author__ = 'wangjian2254'
 from google.appengine.api import memcache, urlfetch
 from qqweibo.auth import  OAuthHandler as qqOAuthHandler
 from qqweibo.api import  API as qqAPI
-import weibo
 import HTMLParser
 html_parser = HTMLParser.HTMLParser()
 
@@ -259,7 +259,7 @@ def sendSinaWeibo(self,text,imgno=None):
         useracc=userAccessToken[0]
     else:
         return True
-    self.auth=weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/Admin/login_check?website=sina')
+    self.auth= weibo.APIClient(webSetting.xlconsumer_key, webSetting.xlconsumer_secret,webSetting.WEIBOURL+'/Admin/login_check?website=sina')
     self.auth.set_access_token(useracc.sinaSecret, int(useracc.sinaExpires))
 
 

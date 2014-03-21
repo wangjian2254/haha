@@ -3,8 +3,10 @@
 #Date: 13-3-5
 #Time: 下午9:27
 from google.appengine.api import memcache
-from safecode import ImageCode
+
+from joke.safecode import ImageCode
 from tools.page import Page
+
 
 __author__ = u'王健'
 

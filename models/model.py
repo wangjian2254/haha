@@ -10,6 +10,13 @@ class Joke(db.Model):
     type=db.IntegerProperty()
     isCheck=db.BooleanProperty(default=True)
     date=db.StringProperty()
+class NewJoke(db.Model):
+    updateTime=db.DateTimeProperty(auto_now_add=True)
+    joke=db.TextProperty()
+    img=db.TextProperty()
+    type=db.IntegerProperty()
+    isCheck=db.BooleanProperty(default=True)
+    date=db.StringProperty()
 #    replay=db.StringListProperty(indexed=False)
 #    good=db.IntegerProperty(default=0)
 #    bad=db.IntegerProperty(default=0)

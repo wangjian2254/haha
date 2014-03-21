@@ -1,24 +1,24 @@
 #coding=utf-8
 #Date: 11-12-8
 #Time: 下午10:28
-import time
 import logging
-import json
 import re
 import urllib
-import urllib2
 import datetime
-from google.appengine.api import urlfetch
-from models.model import Joke,User, DefaultDate
-import setting
-import sinaWeibo
-import tengWeibo
-from tools.page import Page
-from google.appengine.api import memcache
 from xml.dom.minidom import Document
 import HTMLParser
+
+from google.appengine.api import urlfetch
+from google.appengine.api import memcache
+
+from hahaskin.htmlSkin import JokePage
+from models.model import User, DefaultDate, NewJoke
+from pubweibo import wyWeibo
+import setting
+from pubweibo import sinaWeibo, tengWeibo
+from tools.page import Page
 from webSetting import  sinawebtext, wywebtext, tengwebtext
-import wyWeibo
+
 
 html_parser = HTMLParser.HTMLParser()
 
@@ -63,7 +63,7 @@ class getHaHa(Page):
             result=rpc.get_result()
 #            print result.status_code
             if result.status_code ==200:
-                html=result.content.decode('utf-8').replace('\r','').replace('\n','')
+                html=result.content
 #                html=result.content.decode('utf-8')
                 skin(self,html)
 #            else:
@@ -76,8 +76,28 @@ class getHaHa(Page):
                 
         except Exception,e:
             logging.error('0000'+str(e)+url)
-
 def skin(self,html):
+    defaultDate=DefaultDate.get_by_key_name('date')
+    jokeskin = JokePage()
+    jokeskin.clearHtml()
+    jokeskin.feed(str(html))
+
+    for j in jokeskin.l:
+        try:
+            joke= NewJoke.get_by_key_name('j'+j.get('jid'))
+            if not joke:
+                joke=NewJoke(key_name='j'+j.get('jid'))
+                joke.date=defaultDate.date
+            joke.joke = j.get('jokecontent','').strip().decode('utf-8')
+            if j.get('img',''):
+                joke.img = j.get('img').replace('/small/','/big/')
+                joke.type=2
+            else:
+                joke.type = 3
+            joke.put()
+        except Exception,e:
+            logging.error('111:'+str(e))
+def skin0(self,html):
 #    haha=[]
     '''
     <div class='list-text' id='listText-242377'>
@@ -89,7 +109,7 @@ def skin(self,html):
     defaultDate=DefaultDate.get_by_key_name('date')
     #haha=re.findall('(?i)<div class=\'list-text\' id=\'listText-(\d+)\'[^>]*>(.*?)</div>',html)
     #hahaimg=re.findall('(?i)<a [^>]*mark=\'(\d+)\'[^>]*>[^<]*?<img src=\'(.*?)\'[^>]*>[^<]*</a>',html)
-    haha=re.findall('(?i)<div class=\"block joke-item\" id=\"joke-(\d+)\"[^>]*>(.*?)</div>',html)
+    haha=re.findall('(?i)<p class=\"block joke-item\" id=\"joke-(\d+)\"[^>]*>(.*?)</p>',html)
     hahaimg=re.findall('(?i)<a [^>]*id=\"thumbnail-(\d+)\"[^>]*>[^<]*?<img src=\"(.*?)\"[^>]*>',html)
     imgmap={}
     num=0
@@ -98,9 +118,9 @@ def skin(self,html):
     for idn,txt in haha:
         if idn not in self.jokeset:
             self.jokeset.add(idn)
-            joke= Joke.get_by_key_name('j'+idn)
+            joke= NewJoke.get_by_key_name('j'+idn)
             if not joke:
-                joke=Joke(key_name='j'+idn)
+                joke=NewJoke(key_name='j'+idn)
                 joke.date=defaultDate.date
                 num+1
 #            joke.joke= re.sub('(?i)<[/]{0,1}[\w]{1,5} [^>]*>','',re.sub('(?i)<a [^>]*>[^<]*</a>','',html_parser.unescape(txt)))
@@ -121,13 +141,13 @@ class listHaHa(Page):
     def get(self,limit=20,pagenum=1,nowpage=1,jokeid='j'):
         if int(limit)!=20:
             return
-        html=memcache.Client().get(str(limit)+'page'+str(pagenum))
+        html=memcache.get(str(limit)+'page'+str(pagenum))
         if html:
             return self.flashhtml(html)
         limit=int(limit)
         pagenum=int(pagenum)
         nowpage=int(nowpage)
-        nowjoke=Joke.get_by_key_name(jokeid)
+        nowjoke=NewJoke.get_by_key_name(jokeid)
         if not nowjoke:
             pagenum=1
             nowpage=1
@@ -148,9 +168,9 @@ class listHaHa(Page):
         tmp=self.request.get('tmp')
         if tmp and tmppagenum>0:
             pagenum=tmppagenum
-        hahalist=memcache.Client().get(str(limit)+'p'+str(pagenum))
+        hahalist=memcache.get(str(limit)+'p'+str(pagenum))
         if not hahalist:
-            hahalist=Joke.all()
+            hahalist=NewJoke.all()
             if pagenum>=nowpage:
                 if nowjoke:
                     hahalist=hahalist.filter('updateTime <',nowjoke.updateTime)
@@ -160,7 +180,7 @@ class listHaHa(Page):
                     hahalist=hahalist.filter('updateTime >',nowjoke.updateTime)
                 hahalist=hahalist.order('updateTime').fetch(limit,limit*(nowpage-pagenum))
                 hahalist.reverse()
-            memcache.Client().set(str(limit)+'p'+str(pagenum),hahalist,7200)
+            memcache.set(str(limit)+'p'+str(pagenum),hahalist,7200)
 
         if hahalist:
             nowpagestr=hahalist[-1].key().name()
@@ -169,7 +189,7 @@ class listHaHa(Page):
             nowpagestr='j'
             nowpagestrp='j'
         nowpage='/%s/%s/%s/%s'%(limit,pagenum,pagenum,nowpagestr)
-        pagelist=memcache.Client().get(nowpage)
+        pagelist=memcache.get(nowpage)
         if not pagelist:
             pagelist=[]
             for i in range(max(1,pagenum-2),max(1,pagenum-2)+7):
@@ -177,12 +197,12 @@ class listHaHa(Page):
                     pagelist.append(('/%s/%s/%s/%s'%(limit,i,pagenum,nowpagestr),i))
                 else:
                     pagelist.append(('/%s/%s/%s/%s'%(limit,i,pagenum,nowpagestrp),i))
-            memcache.Client().set(nowpage,pagelist,72000)
+            memcache.set(nowpage,pagelist,72000)
         if pagenum>1:
             setCookie='pagenum=%s;'%(pagenum,)
             self.response.headers.add_header('Set-Cookie', str(setCookie)+'Max-Age = 36000;path=/;')
         html=self.obj2str('templates/result.html',{'refer':refer,'hahalist':hahalist,'per':'/%s/%s/%s/%s'%(limit,max(1,pagenum-1),pagenum,nowpagestr),'next':'/%s/%s/%s/%s'%(limit,max(1,pagenum+1),pagenum,nowpagestrp),'pagelist':pagelist,'nowpage':nowpage,'pagenum':pagenum})
-        memcache.Client().set(str(limit)+'page'+str(pagenum),html,7200)
+        memcache.set(str(limit)+'page'+str(pagenum),html,7200)
         self.flashhtml(html)
 
 class newHaHa(Page):
@@ -207,10 +227,10 @@ class newHaHa(Page):
         tmp=self.request.get('tmp')
         if tmp and tmppagenum>0:
             pagenum=tmppagenum
-        hahalist=memcache.Client().get(str(limit)+'p'+str(pagenum))
+        hahalist=memcache.get(str(limit)+'p'+str(pagenum))
         if not hahalist:
-            hahalist=Joke.all().order('-updateTime').fetch(limit,limit*(pagenum-1))
-            memcache.Client().set(str(limit)+'p'+str(pagenum),hahalist,7200)
+            hahalist=NewJoke.all().order('-updateTime').fetch(limit,limit*(pagenum-1))
+            memcache.set(str(limit)+'p'+str(pagenum),hahalist,7200)
         if hahalist:
             nowpagestr=hahalist[-1].key().name()
             nowpagestrp=hahalist[0].key().name()
@@ -218,7 +238,7 @@ class newHaHa(Page):
             nowpagestr='j'
             nowpagestrp='j'
         nowpage='/%s/%s/%s/%s'%(limit,pagenum,pagenum,nowpagestr)
-        pagelist=memcache.Client().get(nowpage)
+        pagelist=memcache.get(nowpage)
         if not pagelist:
             pagelist=[]
             for i in range(max(1,pagenum-2),max(1,pagenum-2)+7):
@@ -226,7 +246,7 @@ class newHaHa(Page):
                     pagelist.append(('/%s/%s/%s/%s'%(limit,i,pagenum,nowpagestr),i))
                 else:
                     pagelist.append(('/%s/%s/%s/%s'%(limit,i,pagenum,nowpagestrp),i))
-            memcache.Client().set(nowpage,pagelist,72000)
+            memcache.set(nowpage,pagelist,72000)
         if pagenum>1:
             setCookie='pagenum=%s;'%(pagenum,)
             self.response.headers.add_header('Set-Cookie', str(setCookie)+'Max-Age = 36000;path=/;')
@@ -247,17 +267,17 @@ class getJokeByPhone(Page):
         else:
             type=int(type)
         memkey='d'+str(limit)+joke+str(type)
-        jlist=memcache.Client().get(memkey)
+        jlist=memcache.get(memkey)
         if not jlist:
-            jlist=Joke.all()
+            jlist=NewJoke.all()
             if joke:
-                joke=Joke.get_by_key_name(joke)
+                joke=NewJoke.get_by_key_name(joke)
             if joke:
                 jlist=jlist.filter('updateTime >',joke.updateTime)
             if type:
                 jlist=jlist.filter('type =',type)
             jlist=jlist.order('updateTime').fetch(limit)
-            memcache.Client().set(memkey,jlist,7200)
+            memcache.set(memkey,jlist,7200)
         xml,datas=list2xml(jlist)
         datas.setAttribute('aPhoneVerson',str(setting.aPhoneVerson))
         datas.setAttribute('aPhoneURI',setting.aPhoneURI)
@@ -286,7 +306,7 @@ class SendWeibo(Page):
         userpwd=self.request.get('userpwd')
         jokeid=self.request.get('jokeid')
         website=self.request.get('website')
-        joke=Joke.get_by_key_name(jokeid)
+        joke=NewJoke.get_by_key_name(jokeid)
         msg=''
         if not joke:
             self.response.out.write(u'该条笑话在服务器上已经删除。')

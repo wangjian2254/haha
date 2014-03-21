@@ -1,22 +1,19 @@
 #coding=utf-8
 from datetime import datetime
 import urllib
-import logging
-import json
+
+from pubweibo import weibo
 from t4py.tblog.tblog import TBlog
 from tools.page import Page
 import webSetting
 from models.model import User
-import weibo
+
 
 __author__ = 'Administrator'
 
-from google.appengine.api import urlfetch
 #from weibopy import OAuthHandler, oauth, WeibopError
 from google.appengine.api import memcache
-from google.appengine.api import users
 from qqweibo import  OAuthHandler as qqOAuthHandler
-from qqweibo import  API,JSONParser
 
 #
 #class WebOAuthHandler(OAuthHandler):
