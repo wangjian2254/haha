@@ -13,11 +13,8 @@ __author__ = u'王健'
 def get(keyName):
     html=memcache.get(keyName)
     if not html:
-        h=HtmlPage.get_by_key_name(keyName)
-        if h:
-            h.delete()
-            memcache.set(keyName,h.html,3600*24)
-        else:
+
+
             return None
     else:
         return html
@@ -37,9 +34,7 @@ def set(keyName,html,timeNum):
 
 
 def delete(keyName):
-    h=HtmlPage.get_by_key_name(keyName)
-    if h:
-        h.delete()
+    memcache.delete(keyName)
 
 
 

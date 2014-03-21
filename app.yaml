@@ -1,4 +1,4 @@
-application: smile-joke
+application: jokeinlive
 version: 20140321
 runtime: python27
 api_version: 1
