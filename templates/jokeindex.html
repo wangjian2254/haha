@@ -96,8 +96,8 @@
         </div>
 
     </div>
-
 {%for ha in hahalist%}
+
 <div  onmouseover="light('{{ha.key().name()}}',0)" onmouseout="lightdiv('{{ha.key().name()}}',0)" id="div{{ha.key().name()}}" class="df top_line" ><p>{{ha.joke}}</p>{%if ha.img%}<p><img src='{{ha.img}}' style="max-width: 750px;" /></p>{%endif%}
 <div  class="pingjia0">
     <span>发布于:{{ha.updateTime.strftime('%Y-%m-%d %H:%M')}}</span>
@@ -107,7 +107,13 @@
 
 <div id="commentlist{{ha.key().name()}}" style="display: none;text-align: left;width: 95%;" class="df"></div>
 </div>
+    {%if loop.index%5==0%}
+    <script> var dsaid=27525; var dwidth=960; var dheight=60; </script> <script type="text/javascript" src="http://unionjs.dianxin.com/showPic.js" name="showpic" charset="utf-8" ></script>
+    <script type="text/javascript">  var dianxin_said = 27526;var dianxin_width = 960;var dianxin_height = 60;  </script>  <script type="text/javascript" src="http://unionjs.dianxin.com/dianxin_showcc.js"  charset="utf-8" ></script>
+
+    {%endif%}
     {%endfor%}
+
     <div class="ff" id="topdiv"><a href="#save">返<br>回<br>顶<br>层</a></div>
     <div class="page_bottom top_line">
             <div class="page_num">
@@ -139,6 +145,7 @@ document.getElementById("bdimgshare_shell").src="http://bdimg.share.baidu.com/st
     };
     document.getElementById("bdaddtocite_shell").src="http://bdimg.share.baidu.com/static/js/addtocite_shell.js?t=" + Math.ceil(new Date()/3600000);
     </script>
+
 <script type="text/javascript">
 var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
 document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F4a452f6158d0f09ded0e1671a71718ce' type='text/javascript'%3E%3C/script%3E"));
